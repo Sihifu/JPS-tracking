@@ -1,0 +1,8 @@
+1. learn surface of particles
+2. improve clustering with categorizing and hysteresis;
+    2.a calculate strong pixels (high certainty that this pixel belong to sputtered unsputtered cluster)
+    2.b weak pixels will be assigned with hystersis along the gradient
+3. From contour points (candidates for goiod feature points) match NCC of subsequent contours points
+    3.a We need to rotate window around point accordingly (discretize 0 to 360 degrees and match on that)
+    3.b Brisk method of rotating window first
+4. Differences betwqeen object frames for contour

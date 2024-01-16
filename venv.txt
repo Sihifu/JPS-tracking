@@ -1,0 +1,5 @@
+erstellen einmalig "virtualenv venv --python=python3.9"
+"source venv/bin/activate" für aktiveuren
+"deactivate" um deaktivieren
+auswählen in pallete
+"pip install -r requirements.txt" alle packete darein

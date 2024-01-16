@@ -1,0 +1,19 @@
+1. Save Video into "/Video_Data/"
+2. Save Corresponding Image Frames into a folder "Image_Data/folder_name/"
+3. Run "segmentation_tracker.ipynb"
+    3.a Check if number_training_images and history is set accordingly (check background image)
+    3.b Check if Background Image is clean (very important)
+    3.c Make sure the paths to the video and images are correct
+    3.d Make sure that the array stream string has the corresponding image paths in order
+    3.e Make sure the matching has been done accordingly (the shapes of the array should match the frames!!!)
+4. Run "vizualization_center.ipynb"
+    4.a change input parameter accordingly
+    4.b check video if tracking was good enough
+5. Run "save_smoothed_images.ipynb"
+6. Run "particle_data_structure.ipynb"
+6.5 TODO Cut radius calculator
+7. Run "normal_vector_trajectory.ipynb"
+8. Run "rotation_matrices_filtered.ipynb"
+9. Run "roll_out.ipynb"
+10. Run "visualization_clustering_ground_trajectory.ipynb" for each of the particles
+
