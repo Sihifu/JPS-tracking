@@ -28,11 +28,12 @@ def hough_circle(image, draw=False, round=False, dp=1, min_dist=40, canny_upper=
     """
 
     # transform image to grayscale
+
     gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
 
-    # smooth with median filter, gaussian filter also fine window size 5
+    # smooth with median filter, gaussian filter also fine window size 3
     # gray = cv.medianBlur(gray, 5)
-    # gray = cv.GaussianBlur(gray, ksize=(3,3),sigmaX=0)
+    gray = cv.GaussianBlur(gray, ksize=(3,3),sigmaX=0)
 
     circles = cv.HoughCircles(gray, cv.HOUGH_GRADIENT, dp=dp, minDist=min_dist, param1=canny_upper, param2=canny_lower, minRadius=minradius, maxRadius=maxradius)
     if circles is None:

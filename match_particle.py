@@ -40,7 +40,9 @@ def match(circles_stream, eps1=50, frame_numb_offset=0):
         if circles_stream[i] is not None:
             D = pairwise_distances(circles_next,circles_current)
             # extend bipartite graph to match new ids if too big
-            b=np.ones((circles_next.shape[0],circles_next.shape[0]))*eps1
+            #b=np.ones((circles_next.shape[0],circles_next.shape[0]))*eps1
+            b=np.full((circles_next.shape[0],circles_next.shape[0]),np.inf)
+            np.fill_diagonal(b, eps1)
             D = np.concatenate((D,b),axis=1)
             # extend objects_ids_current
             objects_ids_current=np.append(objects_ids_current,np.arange(total_num_objects,total_num_objects+circles_next.shape[0]))
@@ -57,6 +59,83 @@ def match(circles_stream, eps1=50, frame_numb_offset=0):
                 else:
                     matched_objects[id]=np.vstack((matched_objects[id],a))
                     objects_ids_next.append(id)
+            objects_ids_current=np.array(objects_ids_next)
+        else:
+            objects_ids_next=[]
+            for circle in circles_stream[frame_numb_offset]:
+                a=np.concatenate((np.array([frame_numb_offset]),circle)).reshape((1,-1))
+                matched_objects[total_num_objects]=a
+                objects_ids_next.append(total_num_objects)
+                total_num_objects+=1
+            objects_ids_current=np.array(objects_ids_next)
+    return matched_objects
+
+def match_Jaq(circles_stream, eps1=50, frame_numb_offset=0):
+    """
+    Input
+    -----
+    circles_stream: np.array (#frames,3)
+    eps1: match threshold;legitimate match is only valid if objects are less than eps1 pixels away
+    frame_numb_offset:
+    Output
+    ------
+    matched_objects: Dictionary with stream of particle, values are np array of (frames,4); frame_number,xpos,ypos,radius
+    """
+    # hypothesis next image circles will match with smallest distance, since frame rate is high
+    # a legitimate match is only valid if objects are less than eps1 pixels away
+    frame_numb_offset=0
+    while True:
+        if circles_stream[frame_numb_offset] is not None:
+            break
+        frame_numb_offset+=1
+    circles_current=circles_stream[frame_numb_offset][:,:-1]
+    # initialize matched objects
+    a=np.concatenate((frame_numb_offset*np.ones(circles_current.shape[0]).reshape((-1,1)),circles_stream[frame_numb_offset]),axis=1)
+    matched_objects=dict(enumerate(a[:,np.newaxis,:]))
+    # initialize objects_ids to keep track
+    objects_ids_current=np.arange(circles_current.shape[0])
+    total_num_objects=circles_current.shape[0]
+    for i in range(frame_numb_offset,len(circles_stream)-1):
+        frame_numb_offset+=1
+        if circles_stream[i] is not None:
+            circles_current=circles_stream[i][:,:]
+        if circles_stream[frame_numb_offset] is not None:
+            circles_next=circles_stream[frame_numb_offset][:,:]
+        else:
+            circles_current=None
+            objects_ids_current=np.empty(0,dtype=int)
+            continue
+        if circles_stream[i] is not None:
+            D_11 = pairwise_distances(circles_current,circles_next)
+            # extend bipartite graph to match new ids if too big
+            D_12=np.full((D_11.shape[0],D_11.shape[0]),np.inf)
+            np.fill_diagonal(D_12, eps1)
+            D_21=np.full((D_11.shape[1],D_11.shape[1]),np.inf)
+            np.fill_diagonal(D_21, eps1)
+            D_upper = np.concatenate((D_11,D_12),axis=1)
+            D_lower = np.concatenate((D_21,D_11.T),axis=1)
+            D=np.concatenate((D_upper,D_lower),axis=0)
+
+            _, col_ind = linear_sum_assignment(D)
+            objects_ids_next=[]
+            for index_next,optimal_index in enumerate(col_ind):
+                try:
+                    if optimal_index>=D_11.shape[1]:
+                        # terminate track
+                        continue
+                    a=np.concatenate((np.array([frame_numb_offset]),circles_stream[frame_numb_offset][optimal_index,:])).reshape((1,-1))
+                    if index_next>=D_11.shape[0]:
+                        # start new track
+                        id=total_num_objects
+                        total_num_objects=total_num_objects+1
+                        matched_objects[id]=a
+                    else:
+                        # concatenate track
+                        id=objects_ids_current[index_next]
+                        matched_objects[id]=np.vstack((matched_objects[id],a))
+                    objects_ids_next.append(id)
+                except:
+                    print("hmm")
             objects_ids_current=np.array(objects_ids_next)
         else:
             objects_ids_next=[]

@@ -11,3 +11,5 @@ numpy-quaternion
 numba
 celluloid
 scikit-image
+seaborn
+seaborn-image

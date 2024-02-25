@@ -20,7 +20,7 @@ class Segmentation:
         """
         self.backsub=backsub
 
-    def segment_image(self,image, dp=1, min_dist=40, canny_upper=80, canny_lower=10, minradius=5, maxradius=25):
+    def segment_image(self,image, dp=1, min_dist=40, canny_upper=80, canny_lower=10, minradius=5, maxradius=None):
         """
         Segments the input image with Hough Circle and Background Substraction
 
@@ -81,6 +81,8 @@ class Segmentation:
         for roi in rois:
             r_max=np.min(roi[0].shape[:1])//2
             r_max=np.max([r_max,minradius])
+            if maxradius is not None:
+                r_max=maxradius
             circle=hough_circle(roi[0], maxradius=r_max, dp=dp, min_dist=min_dist, canny_upper=canny_upper, canny_lower=canny_lower, minradius=minradius)
             if type(circle) is np.ndarray:
                 circle[:,:2]=circle[:,:2]+roi[1].reshape((1,2))
