@@ -79,7 +79,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Contact
 
-For any questions or suggestions, please reach out to [Hoang.dang.tun@gmail.com](mailto:Hoang.dang.tun@gmail.com).
+For any questions or suggestions, please reach out to [Hoang.dang.tum@gmail.com](mailto:Hoang.dang.tum@gmail.com).
 
 
 
