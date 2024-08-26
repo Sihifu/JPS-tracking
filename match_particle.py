@@ -40,7 +40,6 @@ def match(circles_stream, eps1=50, frame_numb_offset=0):
         if circles_stream[i] is not None:
             D = pairwise_distances(circles_next,circles_current)
             # extend bipartite graph to match new ids if too big
-            #b=np.ones((circles_next.shape[0],circles_next.shape[0]))*eps1
             b=np.full((circles_next.shape[0],circles_next.shape[0]),np.inf)
             np.fill_diagonal(b, eps1)
             D = np.concatenate((D,b),axis=1)

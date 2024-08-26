@@ -90,38 +90,6 @@ class Segmentation:
         if circles.shape[0]==0:
             return None
         self.circles=circles
-        """
-        self.circles=hough_circle(image*self.foreground_mask[:,:,np.newaxis])
-        #self.circles=hough_circle(image)
-        if type(self.circles) is np.ndarray:
-            true_circle_index=np.ones((self.circles.shape[0]), dtype=bool)
-            for i in range(true_circle_index.shape[0]):
-                radius=round(self.circles[i,-1])
-                x_pos=round(self.circles[i,0])
-                y_pos=round(self.circles[i,1])
-                M=cake(radius)
-                object_foreground=self.foreground_mask.copy()
-                object_foreground=np.pad(object_foreground, pad_width=[(radius+1, radius+1),(radius+1, radius+1)], mode='constant')
-                object_foreground=object_foreground[y_pos+1:y_pos+2*radius+2,x_pos+1:x_pos+2*radius+2]
-                if np.sum(object_foreground*M)<=np.sum(M)*0.8:
-                    true_circle_index[i]=False
-        self.circles=self.circles[true_circle_index,:]
-        """
-        """
-        self.binary_mask=np.zeros(self.foreground_mask.shape,np.uint8)
-        # pad binary massk with 0 with half of max circle radius
-        max_circle_radius=20
-        self.binary_mask=np.pad(self.binary_mask, pad_width=[(max_circle_radius, max_circle_radius),(max_circle_radius, max_circle_radius)], mode='constant')
-        if type(self.circles) is np.ndarray:
-            for i in range(self.circles.shape[0]):
-                M=cake(self.circles[i,-1])
-                window_length=M.shape[0]//2
-                y=round(self.circles[i,1])
-                x=round(self.circles[i,0])
-                self.binary_mask[max_circle_radius+y-window_length:max_circle_radius+y+window_length+1,max_circle_radius+x-window_length:max_circle_radius+x+window_length+1]=M.astype(np.uint8)
-        # undo padding
-        self.binary_mask=self.binary_mask[max_circle_radius:-max_circle_radius,max_circle_radius:-max_circle_radius]
-        """
         return self.circles
     
 

@@ -59,12 +59,8 @@ def hough_circle(image, draw=False, round=False, dp=1, min_dist=40, canny_upper=
 
 if __name__ == "__main__":
     # Loads an image
-    #im = cv.imread(cv.samples.findFile("Image_Data/test_images/test_frame26.jpg"), cv.IMREAD_COLOR)
-    #im=cv.imread(cv.samples.findFile("Image_Data/Aufnahmen_JPEG_06_07_take_2/Hoang_07_06_2023_Aufnahmen_Rollen_Partikel_Rollen_12_mu_200_002_t011.jpg"), cv.IMREAD_COLOR)
-    #im=cv.imread(cv.samples.findFile("Image_Data/Aufnahmen_JPEG_06_07_take_2/Hoang_07_06_2023_Aufnahmen_Rollen_Partikel_Rollen_12_mu_200_002_t279.jpg"), cv.IMREAD_COLOR)
-    im=cv.imread("Image_Data/Channel_19_10_2023/Take_04/Project_Channel_take_04_t1402.jpg", cv.IMREAD_COLOR)
-    #im=cv.imread("/Users/Hoang_1/Desktop/Master_Arbeit/software/janus_particle_tracking/Image_Data/test_images/test_frame452.jpg", cv.IMREAD_COLOR)
-    circles=hough_circle(im,draw=True,houghparameter=[1,40,80,10,13,19])
+    im=cv.imread("Image_Data/Gute_aufnahme_shortened/Aufnahme_01_12_2023_nur_videos_Gute_aufnahme_t00019.jpg", cv.IMREAD_COLOR)
+    circles=hough_circle(im,draw=True,min_dist=10, canny_upper=40, canny_lower=10, minradius=15, maxradius=25)
     if circles!=None:
         print(circles.shape)
     else:

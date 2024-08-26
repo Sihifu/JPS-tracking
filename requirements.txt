@@ -13,3 +13,4 @@ celluloid
 scikit-image
 seaborn
 seaborn-image
+jupyterlab
