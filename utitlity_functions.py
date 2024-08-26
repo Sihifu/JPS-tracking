@@ -15,7 +15,32 @@ def caluclate_normal_vector_from_contour(edge_pixels_local_3d):
     """
     svd = np.linalg.svd(edge_pixels_local_3d)
     n=svd[2][-1,:]
-    return n
+    return n,svd[1][-1]/edge_pixels_local_3d.shape[0]
+
+
+def caluclate_normal_vector_from_contour_soft(edge_pixels_local_3d,mu=0):
+    """
+    Calculate Normal vector given edge_pixels_local_3d origin is not constraint
+    
+    Parameters
+    ----------
+    edge_pixels_local_3d: np.array (N,3)
+
+    Returns
+    ----------
+    normal vector: np.array (3,)
+    mean_vector: np.array (3,)
+    """
+    x_mean=np.sum(edge_pixels_local_3d,axis=0)/(mu+edge_pixels_local_3d.shape[0])
+    svd = np.linalg.svd(edge_pixels_local_3d-x_mean[np.newaxis,:])
+    n=svd[2][-1,:]
+    return n,x_mean
+
+def attention_edge_pixel(edge_pixels_local_3d,r_effective):
+    weight=lambda r :np.exp(-r**2 / (2*(r_effective-2)**2))
+    radii=np.linalg.norm(edge_pixels_local_3d[:,:2],axis=1)
+    attention=weight(radii)
+    return attention
 
 def calculate_rotations_from_normal_vector_trajectory(normal_vector_trajectory):
     """
@@ -359,3 +384,43 @@ def draw_plane_hard_constraint(ax, n):
     X=X[:,:,np.argsort(permutation)]
     return X[:,:,0],X[:,:,1],X[:,:,2]
 
+
+
+def draw_plane_soft_constraint(ax, n, xmean):
+    xlim=ax.get_xlim()
+    ylim=ax.get_ylim()
+    zlim=ax.get_zlim()
+    axlim=np.array([xlim,ylim,zlim])
+    permutation=np.argsort(np.abs(n))
+    n_permuted=n[permutation]
+    xmean_permuted=xmean[permutation]
+    axlim_permuted=axlim[permutation]
+    X1,X2 =np.meshgrid(np.arange(axlim_permuted[0,0],axlim_permuted[0,1]+1),
+                np.arange(axlim_permuted[1,0],axlim_permuted[1,1]+1))
+    X3=xmean_permuted[2]+(-(n_permuted[0]*(X1-xmean_permuted[0])+n_permuted[1]*(X2-xmean_permuted[1]))/n_permuted[-1])
+    X=np.concatenate((X1[:,:,np.newaxis],X2[:,:,np.newaxis]),axis=2)
+    X=np.concatenate((X,X3[:,:,np.newaxis]),axis=2)
+    X=X[:,:,np.argsort(permutation)]
+    return X[:,:,0],X[:,:,1],X[:,:,2]
+
+def calculate_ellipse(n,R):
+    up_down=True
+    if n[2]==0:
+        if n[1]==0:
+            return 2*R,0,0
+        if n[0]==0:
+            return 0,2*R,0
+        
+        angle=(np.arctan2(-n[0]/n[1],1))*(180/np.pi)
+        return 2*R,0,angle, up_down
+    a=-n[0]/n[2]
+    b=-n[1]/n[2]
+    width=2*R
+    height=2*(R/np.sqrt(1+a**2+b**2))
+    if a==0 or b==0:
+        angle=0
+    else:
+        angle=(np.arctan2(a**2,-a*b))*(180/np.pi)
+        if a+(b**2)/a<0:
+            up_down=False
+    return width,height,angle,up_down

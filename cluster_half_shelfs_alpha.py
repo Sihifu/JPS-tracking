@@ -162,6 +162,8 @@ class Half_shelf_cluster:
                 x = np.linspace(0,255, 1000)
                 plt.plot(x, self.priors_gmm[k]*norm.pdf(x, self.means_gmm[k], np.sqrt(self.variance[k])))
             plt.show()
+        return self.priors_gmm, self.gmm.score(self.data.reshape((-1,1)))
+
 
 
     def train_gmm_cutoff_filter(self, cut_off_probability=0.95, plot_hist=False):   
@@ -260,6 +262,8 @@ class Half_shelf_cluster:
 
         pass
     
+    def get_priors_avg_log_likelihood(self):
+        return self.priors_gmm, self.gmm.score(self.data.reshape((-1,1)))
                 
 
 if __name__=="__main__":

@@ -29,6 +29,9 @@ class ParticleDataStruct:
         self.M=self.confectionery.sell_cake(round(self.r_estimate),2*round(self.r_estimate)+1,2*round(self.r_estimate)+1)
         self.ind_pos=np.flatnonzero(self.M)
 
+    def bgr2gray(self,bgr):
+        pass
+
     def create_data_3d(self):
         """
         creates the data structure
